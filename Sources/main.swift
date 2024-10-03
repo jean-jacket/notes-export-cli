@@ -1,4 +1,11 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+import Foundation
 
-print("Hello, world!")
+let args = CommandLine.arguments
+
+if args.count < 3 {
+        print("--output-dir required")
+        exit(1)
+}
+
+let outputDir = args[2]
+
