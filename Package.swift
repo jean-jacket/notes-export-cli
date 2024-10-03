@@ -5,9 +5,6 @@ import PackageDescription
 
 let package = Package(
     name: "notes-export",
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.5.0"),
-    ]
     targets: [
         .executableTarget(
             name: "notes-export"),
