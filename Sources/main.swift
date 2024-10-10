@@ -7,7 +7,12 @@ if args.count < 3 {
     exit(1)
 }
 
-let outputDir = args[2]
+let outputDir = NSString(string: args[2]).expandingTildeInPath
+
+if !FileManager.default.fileExists(atPath: outputDir) {
+    print("notes-export: Output directory doesn't exist")
+    exit(1)
+}
 
 let script = """
     script NoteExport
@@ -35,7 +40,7 @@ let appleScript = NSAppleScript(source: script)
 var errorDict: NSDictionary?
 
 if let error = errorDict {
-    print("Error: \(error)")
+    print("notes-export: \nerror: \(error)")
     exit(1)
 }
 
@@ -54,3 +59,17 @@ if let descriptor = appleScript?.executeAndReturnError(&errorDict) {
     }
 }
 
+
+
+for (idx, nt) in notes.enumerated() {
+    let path = "\(outputDir)/\(idx).html"
+    print("writing to \(path)")
+    let urlPath = URL(fileURLWithPath: path)
+    do {
+        try Data(nt[1].utf8).write(to: urlPath)
+    } catch {
+        print(error)
+        exit(1)
+    }
+    
+}
