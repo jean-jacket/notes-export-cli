@@ -2,6 +2,7 @@ import Foundation
 
 let args = CommandLine.arguments
 
+// TODO: Improve flag handling and think about other flags
 if args.count < 3 {
     print("--output-dir required")
     exit(1)
@@ -10,9 +11,11 @@ if args.count < 3 {
 let outputDir = NSString(string: args[2]).expandingTildeInPath
 
 if !FileManager.default.fileExists(atPath: outputDir) {
-    print("notes-export: Output directory doesn't exist")
+    print("notes-export: Output directory \(outputDir) doesn't exist")
     exit(1)
 }
+
+// TODO: Maybe think about checking existing notes on disk
 
 let script = """
     script NoteExport
@@ -60,9 +63,13 @@ if let descriptor = appleScript?.executeAndReturnError(&errorDict) {
 }
 
 
+var exportedCount = 0;
+var invalidChars = CharacterSet.alphanumerics
+invalidChars.invert()
 
-for (idx, nt) in notes.enumerated() {
-    let path = "\(outputDir)/\(idx).html"
+for nt in notes {
+    let fileName = String(nt[0].components(separatedBy: invalidChars).joined(separator: "-").prefix(50))
+    let path = "\(outputDir)/\(fileName).html"
     print("writing to \(path)")
     let urlPath = URL(fileURLWithPath: path)
     do {
@@ -71,5 +78,8 @@ for (idx, nt) in notes.enumerated() {
         print(error)
         exit(1)
     }
+    exportedCount += 1
     
 }
+
+print("notes-export: Exported \(exportedCount) notes to \(outputDir)")
